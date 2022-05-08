@@ -1,0 +1,70 @@
+- id: "1637655556006"
+  alias: Kitchen Presence Off
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.kit_motion_sensor
+      from: "on"
+      to: "off"
+      for:
+        minutes: 4
+    - platform: state
+      entity_id: binary_sensor.kit_sink_motion_sensor
+      from: "on"
+      to: "off"
+      for:
+        minutes: 4
+    - platform: state
+      entity_id: binary_sensor.kit_door_fridge
+      from: "on"
+      to: "off"
+      for:
+        minutes: 4
+    - platform: state
+      entity_id: binary_sensor.kit_ceiling_motion_sensor
+      from: "on"
+      to: "off"
+      for:
+        minutes: 4
+    - platform: state
+      entity_id: binary_sensor.kitchen_speaker_status
+      from: "on"
+      to: "off"
+      for:
+        minutes: 4
+  condition:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.kit_motion_sensor
+          state: "off"
+          for:
+            minutes: 4
+        - condition: state
+          entity_id: binary_sensor.kit_sink_motion_sensor
+          state: "off"
+          for:
+            minutes: 4
+        - condition: state
+          entity_id: binary_sensor.kit_door_fridge
+          state: "off"
+          for:
+            minutes: 4
+        - condition: state
+          entity_id: binary_sensor.kit_ceiling_motion_sensor
+          state: "off"
+          for:
+            minutes: 4
+        - condition: state
+          entity_id: binary_sensor.kitchen_speaker_status
+          state: "off"
+          for:
+            minutes: 4
+        - condition: state
+          entity_id: input_boolean.kitchen_presence
+          state: "on"
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.kitchen_presence
+  mode: restart

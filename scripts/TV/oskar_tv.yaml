@@ -1,0 +1,31 @@
+oskar_tv:
+  alias: Oskar TV
+  sequence:
+    - service: media_player.turn_on
+      target:
+        entity_id: media_player.julmtv
+    - delay:
+        seconds: 20
+    - service: remote.send_command
+      target:
+        entity_id: remote.julmtv
+      data:
+        command: NRC_NETFLIX-ONOFF
+    - delay:
+        seconds: 14
+    - repeat:
+        count: "4"
+        sequence:
+          - service: remote.send_command
+            data:
+              command: NRC_LEFT-ONOFF
+            target:
+              entity_id: remote.julmtv
+          - delay:
+              seconds: 1
+    - service: remote.send_command
+      target:
+        entity_id: remote.julmtv
+      data:
+        command: NRC_ENTER-ONOFF
+  mode: single

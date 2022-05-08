@@ -1,0 +1,51 @@
+- id: "1646058298228"
+  alias: LR lights on with PC
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.jo_pc_ping
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.evening
+      from: "off"
+      to: "on"
+    - platform: numeric_state
+      entity_id: input_number.lr_lux
+      below: "25"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.jo_pc_ping
+      state: "on"
+    - condition: state
+      entity_id: input_boolean.lr_long_mode
+      state: "off"
+    - condition: state
+      entity_id: media_player.julmtv
+      state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.lr_lights_left_keep_off
+          state: "off"
+        - condition: state
+          entity_id: input_boolean.lr_lights_right_keep_off
+          state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.full_day
+          state: "off"
+        - condition: numeric_state
+          entity_id: input_number.lr_lux
+          below: "25"
+  action:
+    - service: script.lr_standard_mode
+      data:
+        lr_light_entity: light.lr_lights_full_group_zha
+    - delay:
+        seconds: 5
+    - service: switch.turn_off
+      target:
+        entity_id: switch.lr_socket_fan
+  mode: single

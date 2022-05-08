@@ -1,0 +1,33 @@
+- id: "1637067140711"
+  alias: Kitchen Sink Light Motion
+  description:
+    Turn on kitchen sink LED strip when motion is detected. Turn it off
+    when motion is not detected any more
+  trigger:
+    - type: motion
+      platform: device
+      device_id: 25acaf16131c17fd2dcaa2e8fa3aa4c9
+      entity_id: binary_sensor.kit_sink_motion_sensor
+      domain: binary_sensor
+    - platform: state
+      entity_id: switch.kit_socket_stove
+      from: "off"
+      to: "on"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.kit_socket_sink_light
+    - wait_for_trigger:
+        - platform: state
+          entity_id: group.kit_sink_motion_stove_group
+          from: "on"
+          to: "off"
+          for:
+            minutes: 1
+      timeout: "03:00:00"
+      continue_on_timeout: true
+    - service: switch.turn_off
+      target:
+        entity_id: switch.kit_socket_sink_light
+  mode: restart

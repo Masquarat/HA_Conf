@@ -1,0 +1,248 @@
+- id: '1637147562688'
+  alias: fridge door sensor test
+  description: kitchen door sensor test
+  trigger:
+  - type: opened
+    platform: device
+    device_id: c583d897d4aedcc40a530a287b435a8d
+    entity_id: binary_sensor.kit_door_fridge
+    domain: binary_sensor
+  - type: not_opened
+    platform: device
+    device_id: c583d897d4aedcc40a530a287b435a8d
+    entity_id: binary_sensor.kit_door_fridge
+    domain: binary_sensor
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - type: is_open
+        condition: device
+        device_id: c583d897d4aedcc40a530a287b435a8d
+        entity_id: binary_sensor.kit_door_fridge
+        domain: binary_sensor
+      sequence:
+      - service: tts.cloud_say
+        data:
+          entity_id: media_player.kitchen_speaker
+          message: Fridge opened
+    - conditions:
+      - type: is_not_open
+        condition: device
+        device_id: c583d897d4aedcc40a530a287b435a8d
+        entity_id: binary_sensor.kit_door_fridge
+        domain: binary_sensor
+      sequence:
+      - service: tts.cloud_say
+        data:
+          entity_id: media_player.kitchen_speaker
+          message: Fridge closed
+    default: []
+  mode: restart
+- id: '1637638092209'
+  alias: Dining Lights Motion on Temp
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.dining_motion
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.kitchen_lights_motion
+    state: 'off'
+  action:
+  - service: script.kitchen_lights_dining_mode
+  - wait_for_trigger:
+    - platform: state
+      entity_id: input_boolean.dining_motion
+      from: 'on'
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 20
+        milliseconds: 0
+    continue_on_timeout: true
+  - condition: state
+    entity_id: input_boolean.kitchen_lights_motion
+    state: 'off'
+  - service: script.light_turn_off_with_transition
+    data:
+      turn_off_entity: light.kitchen_lights_full_group_zha_group
+      transition_time: 25
+  mode: restart
+- id: '1637819811899'
+  alias: Dining Lights Motion On Temp_2
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.dining_motion
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.kitchen_lights_motion
+        state: 'on'
+      sequence:
+      - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.dining_motion
+          from: 'on'
+          to: 'off'
+          for:
+            seconds: 20
+      - condition: state
+        entity_id: input_boolean.kitchen_lights_motion
+        state: 'off'
+      - service: script.light_turn_off_with_transition_kit
+        data:
+          turn_off_entity: light.kitchen_lights_full_group_zha_group
+          transition_time: 25
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.kitchen_lights_motion
+        state: 'off'
+      sequence:
+      - service: script.kitchen_lights_dining_mode
+      - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.dining_motion
+          from: 'on'
+          to: 'off'
+          for:
+            seconds: 20
+      - condition: state
+        entity_id: input_boolean.kitchen_lights_motion
+        state: 'off'
+      - service: script.light_turn_off_with_transition_kit
+        data:
+          turn_off_entity: light.kitchen_lights_full_group_zha_group
+          transition_time: 25
+    default: []
+  mode: restart
+- id: '1639914487427'
+  alias: tv lights test automation
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 190fe637d4dc28943057893c1fcfe99d
+    domain: media_player
+    entity_id: media_player.julmtv
+    type: turned_on
+  condition: []
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id:
+      - switch.lr_socket_tv_lights
+      - switch.lr_socket_fan
+  - wait_for_trigger:
+    - platform: device
+      device_id: 190fe637d4dc28943057893c1fcfe99d
+      domain: media_player
+      entity_id: media_player.julmtv
+      type: turned_off
+  - service: switch.turn_off
+    target:
+      entity_id:
+      - switch.lr_socket_tv_lights
+      - switch.lr_socket_fan
+  mode: single
+- id: '1639919597121'
+  alias: LR_lights_switch_temp
+  description: ''
+  trigger:
+  - device_id: 3e15a61435025f1c929f36d39515804d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_on
+    id: switch_1
+  - device_id: 3e15a61435025f1c929f36d39515804d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_off
+    id: switch_2
+  - device_id: 3e15a61435025f1c929f36d39515804d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: dim_up
+    id: switch_3
+  - device_id: 3e15a61435025f1c929f36d39515804d
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: dim_down
+    id: switch_4
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: switch_1
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.lr_lights_left_group_zha
+        data:
+          brightness: 160
+          kelvin: 2200
+    - conditions:
+      - condition: trigger
+        id: switch_2
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.lr_lights_left_group_zha
+    - conditions:
+      - condition: trigger
+        id: switch_3
+      sequence:
+      - service: light.turn_on
+        target:
+          entity_id: light.lr_lights_right_group_zha
+        data:
+          brightness: 160
+          kelvin: 2200
+    - conditions:
+      - condition: trigger
+        id: switch_4
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.lr_lights_right_group_zha
+    default: []
+  mode: parallel
+  max: 10
+- id: '1641642064852'
+  alias: test trigger
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.lr_motion_sensor_3
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.lr_motion_sensor_3
+      id: motion3
+      from: 'on'
+      to: 'off'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ wait.trigger.id == "motion3" }}'
+      sequence:
+      - service: notify.mobile_app_mi_a1
+        data:
+          message: motion off
+    default: []
+  mode: single

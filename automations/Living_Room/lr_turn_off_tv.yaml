@@ -1,0 +1,53 @@
+- id: "1640070144027"
+  alias: LR_Turn_Off_TV
+  description: ""
+  trigger:
+    #    - platform: device
+    #      device_id: 190fe637d4dc28943057893c1fcfe99d
+    #      domain: media_player
+    #      entity_id: media_player.julmtv
+    #      type: turned_off
+    # changed to state trigger because otherwise when TV goes unavailable (wifi problem) and back to off then automation triggers unintentionally
+    # if this doesn't work, can set condition that LR_long_mode must be on (TV can't be on without long mode being on)
+    - platform: state
+      entity_id: media_player.julmtv
+      from: "on"
+      to: "off"
+  condition: []
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.lr_socket_tv_lights
+    - choose:
+        - conditions:
+            - condition: and
+              conditions:
+                - condition: state
+                  entity_id: input_boolean.lr_play_mode
+                  state: "off"
+                - condition: state
+                  entity_id: input_boolean.lr_lights_left_keep_off
+                  state: "off"
+                - condition: state
+                  entity_id: input_boolean.lr_lights_right_keep_off
+                  state: "off"
+                - condition: or
+                  conditions:
+                    - condition: state
+                      entity_id: binary_sensor.full_day
+                      state: "off"
+                    - condition: numeric_state
+                      entity_id: input_number.lr_lux
+                      below: "25"
+          sequence:
+            - service: script.lr_standard_mode
+              data:
+                lr_light_entity: light.lr_lights_full_group_zha
+      default: []
+    - condition: state
+      entity_id: light.lr_lights_full_group_zha
+      state: "off"
+    - service: switch.turn_off
+      target:
+        entity_id: switch.lr_socket_fan
+  mode: single

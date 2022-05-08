@@ -1,0 +1,15 @@
+- id: "1640180205440"
+  alias: LR_Fan_On_Off_Switch
+  description: ""
+  trigger:
+    - device_id: 3e15a61435025f1c929f36d39515804d
+      domain: zha
+      platform: device
+      type: remote_button_long_press
+      subtype: dim_down
+  condition: []
+  action:
+    - service: switch.toggle
+      target:
+        entity_id: switch.lr_socket_fan
+  mode: single

@@ -1,0 +1,41 @@
+- platform: template
+  sensors:
+    outdoor_temperature:
+      friendly_name: "Outdoor Temperature"
+      unit_of_measurement: "°C"
+      value_template: "{{ state_attr('weather.home', 'temperature') }}"
+    is_oskar_home:
+      friendly_name: "Oskar's Location"
+      value_template: >
+        {% if is_state('sensor.mi_a1_wifi_connection','Julm2-5G ') %}
+          Home
+        {% else %}
+          Away
+        {% endif %}
+    stove_status:
+      friendly_name: "Stove Status"
+      value_template: >
+        {% if is_state('switch.kit_socket_stove','off') %}
+          Off
+        {% elif states('sensor.kit_socket_stove_electrical_measurement') | int <= 3 and is_state('switch.kit_socket_stove','on') %}
+          Standby without Fan
+        {% elif states('sensor.kit_socket_stove_electrical_measurement') | int <= 5 %}
+          Standby with Fan
+        {% else %}
+          On
+        {% endif %}
+    stove_hood_el_cost_monthly:
+      friendly_name: "Stove / Hood cost"
+      value_template: >
+        {% set usage = states('sensor.stove_monthly_usage') + states('sensor.hood_monthly_usage') %}
+        {{ (usage * 4) | round(2) }} Baht in {{ now().strftime('%B') }}
+    bedroom_doors:
+      friendly_name: "Open bedroom doors"
+      value_template: >
+        {% if is_state('binary_sensor.br_entrance','on') and is_state('binary_sensor.br_balcony_door','on') %}
+          balcony and entrance doors have
+        {% elif is_state('binary_sensor.br_entrance','on') %}
+          entrance door has
+        {% elif is_state('binary_sensor.br_balcony_door','on') %}
+          balcony door has
+        {% else %} {% endif %}

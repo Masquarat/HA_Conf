@@ -1,0 +1,35 @@
+kitchen_lights_dining_mode:
+  alias: kitchen_lights_dining_mode
+  sequence:
+    - condition: state
+      entity_id: input_boolean.kitchen_lights_motion
+      state: "off"
+    - service: light.turn_on
+      target:
+        entity_id: light.kitchen_lights_1st_zha_group # siia microwave poolsed 2 bulbi zigbee group
+      data:
+        transition: "10"
+        brightness: >
+          {% if is_state('binary_sensor.day','on') %}
+            50
+          {% elif is_state('binary_sensor.pre_evening','on') %}
+            70
+          {% elif is_state('binary_sensor.evening','on') %}
+            100
+          {% elif is_state('binary_sensor.late_evening','on') %}
+            80
+          {% elif is_state('binary_sensor.night','on') %}
+            30
+          {% else %} {% endif %}
+        kelvin: 2200
+    - service: light.turn_on
+      target:
+        entity_id: light.kitchen_lights_2nd_zha_group # siia kraanikausi poolsed 2 bulbi zigbee group
+      data:
+        transition: "10"
+        brightness: 80
+        rgb_color:
+          - 255
+          - 145
+          - 36
+  mode: single

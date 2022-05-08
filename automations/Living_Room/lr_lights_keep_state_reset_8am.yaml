@@ -1,0 +1,15 @@
+- id: "1640158060507"
+  alias: LR_lights_keep_state_reset_8am
+  description: ""
+  trigger:
+    - platform: time
+      at: 09:55
+  condition: []
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.lr_lights_keep_on
+          - input_boolean.lr_lights_left_keep_off
+          - input_boolean.lr_lights_right_keep_off
+  mode: single

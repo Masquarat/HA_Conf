@@ -1,0 +1,18 @@
+- id: "1648361873356"
+  alias: Away Mode Motion Door Alert
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: group.all_motion_sensors_doors
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: input_boolean.away_mode
+      state: "on"
+  action:
+    - service: notify.mobile_app_mi_a1
+      data:
+        message: There is motion on the house while away mode is ON!
+  mode: parallel
+  max: 10

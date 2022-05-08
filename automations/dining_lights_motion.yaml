@@ -1,0 +1,98 @@
+- id: "1640245953061"
+  alias: Dining Lights Motion
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.dining_motion_sensor
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: input_boolean.dining_motion
+      state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.full_day
+          state: "off"
+        - condition: numeric_state
+          entity_id: input_number.lr_lux
+          below: "100"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.dining_motion
+    - choose:
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: binary_sensor.full_day
+                  state: "off"
+                - condition: numeric_state
+                  entity_id: input_number.lr_lux
+                  below: "100"
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.dining_lights_full_group_zha
+              data:
+                transition: 2
+                kelvin: 2400
+                brightness: >
+                  {% if is_state('binary_sensor.day','on') %}
+                    {{ 150 }}
+                  {% elif is_state('binary_sensor.pre_evening','on') %}
+                    {{ 180 }}
+                  {% elif is_state('binary_sensor.evening','on') %}
+                    {{ 200 }}
+                  {% elif is_state('binary_sensor.late_evening','on') %}
+                    {{ 170 }}
+                  {% elif is_state('binary_sensor.night','on') %}
+                    {{ 70 }}
+                  {% else %} {% endif %}
+            - choose:
+                - conditions:
+                    - condition: state
+                      entity_id: binary_sensor.full_day
+                      state: "off"
+                  sequence:
+                    - service: switch.turn_on
+                      target:
+                        entity_id: switch.dining_socket_section_light
+              default: []
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.kitchen_lights_motion
+              state: "off"
+          sequence:
+            - service: script.kitchen_lights_dining_mode
+      default: []
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.dining_motion_sensor
+          from: "on"
+          to: "off"
+          for:
+            minutes: 4
+      timeout: "07:00:00"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.dining_motion
+    - service: script.turn_on
+      target:
+        entity_id: script.dining_light_turn_off_with_transition
+      data:
+        variables:
+          turn_off_entity: light.dining_lights_full_group_zha
+          transition_time: 25
+    - condition: state
+      entity_id: input_boolean.kitchen_lights_motion
+      state: "off"
+    - service: script.light_turn_off_with_transition_kit
+      data:
+        turn_off_entity: light.kitchen_lights_full_group_zha_group
+        transition_time: 25
+  mode: restart

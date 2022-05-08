@@ -1,0 +1,21 @@
+- id: "1640251620047"
+  alias: LR_TV_off_after_long_idle
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: group.lr_motion_sensors_group
+      from: "on"
+      to: "off"
+      for:
+        hours: 2
+  condition:
+    - condition: device
+      device_id: 190fe637d4dc28943057893c1fcfe99d
+      domain: media_player
+      entity_id: media_player.julmtv
+      type: is_on
+  action:
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.julmtv
+  mode: single

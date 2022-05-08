@@ -1,0 +1,59 @@
+- id: "1640157605678"
+  alias: LR_lights_switch_off
+  description: ""
+  trigger:
+    - device_id: 3e15a61435025f1c929f36d39515804d
+      domain: zha
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_off
+      id: switch_off_left
+    - device_id: 3e15a61435025f1c929f36d39515804d
+      domain: zha
+      platform: device
+      type: remote_button_short_press
+      subtype: dim_down
+      id: switch_off_right
+  condition: []
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.lr_movie_mode
+          - input_boolean.lr_play_mode
+          - input_boolean.lr_lights_keep_on
+          - input_boolean.lr_lights_left_keep_off
+          - input_boolean.lr_lights_right_keep_off
+          - input_boolean.lr_lights_motion
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: switch_off_left
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id: light.lr_lights_left_group_zha
+        - conditions:
+            - condition: trigger
+              id: switch_off_right
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id: light.lr_lights_right_group_zha
+      default: []
+    - delay:
+        seconds: 5
+    - condition: state
+      entity_id: light.lr_lights_full_group_zha
+      state: "off"
+    - condition: state
+      entity_id: media_player.julmtv
+      state: "off"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.lr_long_mode
+    - service: switch.turn_off
+      target:
+        entity_id: switch.lr_socket_fan
+  mode: parallel
+  max: 10

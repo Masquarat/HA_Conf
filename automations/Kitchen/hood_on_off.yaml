@@ -1,0 +1,53 @@
+- id: "1642857572176"
+  alias: Hood On / Off
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: sensor.stove_status
+      to: "On"
+      id: stove_on
+      for:
+        seconds: 3
+    - platform: state
+      entity_id: sensor.stove_status
+      to: Standby with Fan
+      for:
+        minutes: 5
+      id: stove_standby_fan
+    - platform: state
+      entity_id: switch.kit_socket_stove
+      to: Standby without Fan
+      for:
+        minutes: 3
+      id: stove_standby_without_fan
+    - platform: state
+      entity_id: sensor.stove_status
+      to: "Off"
+      for:
+        minutes: 1
+      id: stove_off
+  condition: []
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: stove_on
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.kit_socket_hood
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: trigger
+                  id: stove_standby_fan
+                - condition: trigger
+                  id: stove_standby_without_fan
+                - condition: trigger
+                  id: stove_off
+          sequence:
+            - service: switch.turn_off
+              target:
+                entity_id: switch.kit_socket_hood
+      default: []
+  mode: restart

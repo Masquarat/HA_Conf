@@ -1,0 +1,90 @@
+- id: "1640002759800"
+  alias: LR_TV_Mode
+  description: ""
+  trigger:
+    - platform: device
+      device_id: 190fe637d4dc28943057893c1fcfe99d
+      domain: media_player
+      entity_id: media_player.julmtv
+      type: turned_on
+    - platform: state
+      entity_id: binary_sensor.evening
+      from: "off"
+      to: "on"
+    - platform: numeric_state
+      entity_id: input_number.lr_lux
+      below: "25"
+  #    - platform: state
+  #      entity_id: input_boolean.lr_movie_mode
+  #      from: "on"
+  #      to: "off"
+  #    - platform: state
+  #      entity_id: input_boolean.lr_play_mode
+  #      from: "on"
+  #      to: "off"
+  condition:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.lr_movie_mode
+          state: "off"
+        - condition: state
+          entity_id: input_boolean.lr_play_mode
+          state: "off"
+    - condition: state
+      entity_id: media_player.julmtv
+      state: "on"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.full_day
+          state: "off"
+        - condition: numeric_state
+          entity_id: input_number.lr_lux
+          below: "25"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.lr_long_mode
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.lr_lights_motion
+    - service: light.turn_on
+      target:
+        entity_id: light.lr_lights_left_horz_group_zha
+      data:
+        transition: 5
+        brightness: >
+          {% if is_state('binary_sensor.day','on') %}
+            {{ 80 }}
+          {% elif is_state('binary_sensor.pre_evening','on') %}
+            {{ 90 }}
+          {% elif is_state('binary_sensor.evening','on') %}
+            {{ 90 }}
+          {% elif is_state('binary_sensor.late_evening','on') %}
+            {{ 50 }}
+          {% elif is_state('binary_sensor.night','on') %}
+            {{ 20 }}
+          {% else %} {% endif %}
+        kelvin: 2200
+    - service: light.turn_on
+      target:
+        entity_id: light.lr_lights_right_group_zha
+      data:
+        transition: 5
+        brightness: 30
+        kelvin: 2000
+    - service: light.turn_off
+      target:
+        entity_id: light.lr_lights_left_vert_group_zha
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: binary_sensor.day
+              state: "off"
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.lr_socket_tv_lights
+      default: []
+  mode: single

@@ -1,0 +1,52 @@
+- platform: tod
+  name: Pre_Evening
+  before: sunset
+  before_offset: -00:30:00
+  after: "17:00"
+- platform: tod
+  name: Evening
+  after: sunset
+  after_offset: -00:30:00
+  before: "23:00"
+- platform: tod
+  name: Late_Evening
+  after: "23:00"
+  before: "01:00"
+- platform: tod
+  name: Night
+  after: 01:00
+  before: sunrise
+  before_offset: 00:30:00
+- platform: tod
+  name: Day
+  after: sunrise
+  after_offset: 00:30:00
+  before: "17:00"
+- platform: tod
+  name: Full_Day
+  after: sunrise
+  after_offset: 00:30:00
+  before: sunset
+  before_offset: -00:30:00
+- platform: ping
+  host: 192.168.1.100
+  name: PC Ping
+  count: 2
+  scan_interval: 180
+- platform: ping
+  host: 192.168.1.200
+  name: Jo PC Ping
+  count: 2
+  scan_interval: 120
+- platform: template
+  sensors:
+    monitor_status:
+      friendly_name: "Monitor Status"
+      value_template: >
+        {{ states('sensor.office_socket_monitor_electrical_measurement') | int >= 1 }}
+- platform: template
+  sensors:
+    kitchen_speaker_status:
+      friendly_name: "Kitchen Speaker Status"
+      value_template: >
+        {{ is_state('media_player.kitchen_speaker', 'playing') }}

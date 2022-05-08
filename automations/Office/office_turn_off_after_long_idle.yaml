@@ -1,0 +1,42 @@
+- id: "1646395154063"
+  alias: Office turn off after long idle
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: group.office_presence_group
+      from: "on"
+      to: "off"
+      for:
+        hours: 8
+  condition:
+    - condition: state
+      entity_id: input_boolean.office_motion
+      state: "on"
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.office_motion
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.office_socket_fan
+          - switch.office_socket_left_light
+          - switch.office_socket_workdesk_light
+    - service: fan.turn_off
+      target:
+        entity_id: fan.mi_air_purifier_2s
+    - choose:
+        - conditions:
+            - condition: template
+              value_template:
+                "{{ is_state('binary_sensor.mi_a1_is_charging', 'off')
+                }}"
+          sequence:
+            - service: switch.turn_off
+              target:
+                entity_id: switch.office_socket_right_extension
+    - service: script.office_light_turn_off_with_transition
+      data:
+        turn_off_entity: light.office_lights_full_group_zha
+        transition_time: 25
+  mode: single

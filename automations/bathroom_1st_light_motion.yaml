@@ -1,0 +1,48 @@
+- id: "1640330850760"
+  alias: Bathroom 1st Light Motion
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.bth1_motion_sensor
+      from: "off"
+      to: "on"
+  condition:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.day
+          state: "off"
+        - condition: numeric_state
+          entity_id: input_number.lr_lux
+          below: "30"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.bth1_smart_light
+      data:
+        brightness: >
+          {% if is_state('binary_sensor.day','on') %}
+            {{ 130 }}
+          {% elif is_state('binary_sensor.pre_evening','on') %}
+            {{ 150 }}
+          {% elif is_state('binary_sensor.evening','on') %}
+            {{ 180 }}
+          {% elif is_state('binary_sensor.late_evening','on') %}
+            {{ 100 }}
+          {% elif is_state('binary_sensor.night','on') %}
+            {{ 5 }}
+          {% else %} {% endif %}
+        kelvin: 2200
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.bth1_motion_sensor
+          from: "on"
+          to: "off"
+          for:
+            minutes: 1
+      timeout: "01:00:00"
+    - service: script.light_turn_off_with_transition
+      data:
+        turn_off_entity: light.bth1_smart_light
+        transition_time: 20
+  mode: restart

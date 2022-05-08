@@ -1,0 +1,45 @@
+lr_standard_mode:
+  alias: LR_Standard_Mode
+  sequence:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.lr_long_mode
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.lr_movie_mode
+          - input_boolean.lr_play_mode
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.lr_lights_left_keep_off
+          state: "off"
+        - condition: state
+          entity_id: input_boolean.lr_lights_right_keep_off
+          state: "off"
+    - service: light.turn_on
+      target:
+        entity_id: >
+          {% if is_state('input_boolean.lr_lights_left_keep_off','on') %}
+            light.lr_lights_right_group_zha
+          {% elif is_state('input_boolean.lr_lights_right_keep_off','on') %}
+            light.lr_lights_left_group_zha
+          {% else %}
+            {{ lr_light_entity }}
+          {% endif %}
+      data:
+        brightness: >
+          {% if is_state('binary_sensor.day','on') %}
+            {{ 130 }}
+          {% elif is_state('binary_sensor.pre_evening','on') %}
+            {{ 150 }}
+          {% elif is_state('binary_sensor.evening','on') %}
+            {{ 180 }}
+          {% elif is_state('binary_sensor.late_evening','on') %}
+            {{ 100 }}
+          {% elif is_state('binary_sensor.night','on') %}
+            {{ 40 }}
+          {% else %} {% endif %}
+        kelvin: 2200
+        transition: 3
+  mode: restart

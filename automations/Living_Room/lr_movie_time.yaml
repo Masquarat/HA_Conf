@@ -1,0 +1,70 @@
+- id: "1640175008211"
+  alias: LR_Movie_Time
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: input_boolean.lr_movie_mode
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: input_boolean.lr_movie_mode
+      from: "on"
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.full_day
+      state: "off"
+  action:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.lr_movie_mode
+              state: "on"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.lr_long_mode
+            - service: input_boolean.turn_off
+              target:
+                entity_id:
+                  - input_boolean.lr_play_mode
+                  - input_boolean.lr_lights_left_keep_off
+                  - input_boolean.lr_lights_right_keep_off
+                  - input_boolean.lr_lights_keep_on
+            - service: light.turn_on
+              target:
+                entity_id: light.lr_lights_left_horz_group_zha
+              data:
+                transition: 8
+                kelvin: 2000
+                brightness: 2
+            - service: light.turn_off
+              target:
+                entity_id: light.lr_lights_left_vert_group_zha
+            - service: light.turn_on
+              target:
+                entity_id: light.lr_lights_right_group_zha
+              data:
+                transition: 8
+                brightness: 2
+                color_name: darkblue
+            - service: switch.turn_on
+              target:
+                entity_id: switch.lr_socket_tv_lights
+            - choose:
+                - conditions:
+                    - condition: device
+                      device_id: 190fe637d4dc28943057893c1fcfe99d
+                      domain: media_player
+                      entity_id: media_player.julmtv
+                      type: is_off
+                  sequence:
+                    - service: script.tv_start
+              default: []
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.lr_movie_mode
+              state: "off"
+          sequence: []
+      default: []
+  mode: single

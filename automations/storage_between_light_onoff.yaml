@@ -1,0 +1,129 @@
+- id: "1650453026842"
+  alias: Storage Between Light onoff
+  description: ""
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.br_entrance
+        - binary_sensor.kids_br_entrance
+      from: "off"
+      to: "on"
+      id: door
+    - platform: state
+      entity_id: binary_sensor.storage_ceiling_motion_sensor
+      from: "off"
+      to: "on"
+      id: motion
+  condition:
+    - condition: state
+      entity_id: binary_sensor.day
+      state: "off"
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: door
+          sequence:
+            - choose:
+                - conditions:
+                    - condition: state
+                      entity_id: light.between_smart_light
+                      state: "on"
+                  sequence: []
+                - conditions:
+                    - condition: state
+                      entity_id: light.str_smart_light
+                      state: "off"
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: light.between_smart_light
+                      data:
+                        kelvin: >
+                          {% if is_state('binary_sensor.night','on') %}
+                            {{ 2000 }}
+                          {% elif is_state('binary_sensor.late_evening','on') %}
+                            {{ 2100 }}
+                          {% else %}
+                            {{ 2200 }}
+                          {% endif %}
+                        brightness: >
+                          {% if is_state('binary_sensor.night','on') %}
+                            {{ 5 }}
+                          {% elif is_state('binary_sensor.late_evening','on') %}
+                            {{ 25 }}
+                          {% else %}
+                            {{ 50 }}
+                          {% endif %}
+              default: []
+            - condition: state
+              entity_id: light.between_smart_light
+              state: "on"
+            - delay:
+                minutes: 1
+            - choose:
+                - conditions:
+                    - condition: state
+                      entity_id: binary_sensor.str_motion_sensor
+                      state: "on"
+                  sequence:
+                    - wait_for_trigger:
+                        - platform: state
+                          entity_id: binary_sensor.str_motion_sensor
+                          from: "on"
+                          to: "off"
+                          for:
+                            seconds: 15
+                      timeout: "00:55:00"
+                      continue_on_timeout: true
+              default: []
+            - service: script.light_turn_off_with_transition
+              data:
+                turn_off_entity: light.between_smart_light
+                transition_time: 26
+      default: []
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: motion
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.between_smart_light
+              data:
+                kelvin: >
+                  {% if is_state('binary_sensor.pre_evening','on') %}
+                    2200
+                  {% elif is_state('binary_sensor.evening','on') %}
+                    2300
+                  {% elif is_state('binary_sensor.late_evening','on') %}
+                    2100
+                  {% elif is_state('binary_sensor.night','on') %}
+                    2000
+                  {% else %} {% endif %}
+                brightness: >
+                  {% if is_state('binary_sensor.pre_evening','on') %}
+                    70
+                  {% elif is_state('binary_sensor.evening','on') %}
+                    120
+                  {% elif is_state('binary_sensor.late_evening','on') %}
+                    35
+                  {% elif is_state('binary_sensor.night','on') %}
+                    5
+                  {% else %} {% endif %}
+            - wait_for_trigger:
+                - platform: state
+                  entity_id: binary_sensor.storage_ceiling_motion_sensor
+                  from: "on"
+                  to: "off"
+                  for:
+                    minutes: 1
+                    seconds: 30
+              timeout: "02:00:00"
+              continue_on_timeout: true
+            - service: script.light_turn_off_with_transition
+              data:
+                turn_off_entity: light.between_smart_light
+                transition_time: 26
+      default: []
+  mode: restart

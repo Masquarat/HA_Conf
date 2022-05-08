@@ -1,0 +1,112 @@
+google_actions:
+  filter:
+    include_entities:
+      - light.str_smart_light
+      - light.kitchen_lights_full_group_zha_group
+      - light.dining_lights_full_group_zha
+      - light.lr_lights_full_group_zha
+      - light.lr_lights_left_group_zha
+      - light.lr_lights_right_group_zha
+      - light.office_lights_full_group_zha
+      - switch.kit_socket_sink_light
+      - switch.lr_socket_fan
+      - switch.lr_socket_tv_lights
+      - switch.kit_socket_stove
+      - switch.kit_socket_hood
+      - switch.dining_socket_fan
+      - script.cartoons
+      - script.oskar_tv
+      - script.tv_start
+      - script.sleepy_time
+      - media_player.julmtv
+      - climate.bedroom_ac
+      - input_boolean.lr_movie_mode
+      - input_boolean.lr_play_mode
+      - input_boolean.away_mode
+  entity_config:
+    light.str_smart_light:
+      name: Stair Light
+      aliases:
+        - stairs light
+        - ไฟบันได
+      room: Stairs
+    light.kitchen_lights_full_group_zha_group:
+      name: Kitchen Lights
+      aliases:
+        - Kitchen Light
+      room: Kitchen
+    light.dining_lights_full_group_zha:
+      name: Dining Lights
+      aliases:
+        - Dining Light
+      room: Dining Room
+    light.lr_lights_full_group_zha:
+      name: Living Room Lights
+      aliases:
+        - Living Room Light
+      room: Living Room
+    light.lr_lights_left_group_zha:
+      name: Sofa Lights
+      room: Living Room
+    light.lr_lights_right_group_zha:
+      name: Entrance Lights
+      room: Living Room
+    light.office_lights_full_group_zha:
+      name: Office Lights
+      room: Office
+    switch.kit_socket_sink_light:
+      name: Sink Light
+      aliases:
+        - kitchen backlight
+        - ไฟอ่างล้างจาน
+      room: Kitchen
+    switch.lr_socket_fan:
+      name: Living Room Fan
+      room: Living Room
+    switch.lr_socket_tv_lights:
+      name: TV Lights
+      room: Living Room
+    switch.kit_socket_stove:
+      name: Stove
+      room: Kitchen
+    switch.kit_socket_hood:
+      name: Hood
+      room: Kitchen
+    switch.dining_socket_fan:
+      name: Dining Fan
+      room: Dining Room
+    media_player.julmtv:
+      name: Living Room TV
+      aliases:
+        - TV
+      room: Living Room
+    climate.bedroom_ac:
+      name: Bedroom AC
+      aliases:
+        - Bedroom Air Conditioner
+        - Air Conditioner
+        - AC
+        - Bedroom Aircon
+        - Aircon
+      room: Bedroom
+    script.cartoons:
+      name: Cartoons
+      room: Living Room
+    script.oskar_tv:
+      name: Oskar TV
+      room: Living Room
+    script.tv_start:
+      name: TV Start
+      room: Living Room
+    script.sleepy_time:
+      name: Sleepy Time
+      room: Living Room
+    input_boolean.lr_movie_mode:
+      name: Movie Time
+      room: Living Room
+    input_boolean.lr_play_mode:
+      name: Play Time
+      room: Living Room
+    input_boolean.away_mode:
+      name: Away Mode
+      room: Living Room

@@ -1,0 +1,19 @@
+- id: "1646385074426"
+  alias: Office turn off charger when full
+  description: ""
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.mi_a1_battery_level
+      above: "99"
+  condition:
+    - condition: state
+      entity_id: input_boolean.office_motion
+      state: "off"
+    - condition: state
+      entity_id: switch.office_socket_right_extension
+      state: "on"
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.office_socket_right_extension
+  mode: single

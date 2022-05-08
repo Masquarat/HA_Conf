@@ -1,0 +1,56 @@
+LR_Presence_Group:
+  name: LR Presence Group
+  entities:
+    - binary_sensor.lr_motion_sensor_1
+    - binary_sensor.lr_motion_sensor_2
+    - media_player.julmtv
+    - input_boolean.lr_lights_keep_on
+    - binary_sensor.jo_pc_ping
+LR_Presence_Group_3: # 2 gruppi sp, et motion_sensor_3 on pika cooldowniga ja muidu ei toimiks 2 keskmise tule välja lülitamine piisavalt kiirelt
+  name: LR Presence Group 3
+  entities:
+    - binary_sensor.lr_motion_sensor_1
+    - binary_sensor.lr_motion_sensor_2
+    - binary_sensor.lr_motion_sensor_3
+    - media_player.julmtv
+    - input_boolean.lr_lights_keep_on
+    - binary_sensor.jo_pc_ping
+LR_Motion_Sensors_Group:
+  name: LR Motion Sensors
+  entities:
+    - binary_sensor.lr_motion_sensor_1
+    - binary_sensor.lr_motion_sensor_2
+Kit_Sink_Motion_Stove_Group:
+  name: Kitchen Sink Motion and Stove Group
+  entities:
+    - binary_sensor.kit_sink_motion_sensor
+    - switch.kit_socket_stove
+Bedroom_Doors:
+  name: Bedroom Doors state
+  entities:
+    - binary_sensor.br_entrance
+    - binary_sensor.br_balcony_door
+Office_Presence_Group:
+  name: Office Presence Group
+  entities:
+    - binary_sensor.office_ceiling_motion_sensor
+    - binary_sensor.office_desk_motion_sensor
+    #    - binary_sensor.office_entrance
+    - binary_sensor.monitor_status
+All_Motion_Sensors_Doors:
+  name: All Motion Sensors Doors
+  entities:
+    - binary_sensor.bth1_motion_sensor
+    - binary_sensor.dining_motion_sensor
+    - binary_sensor.kit_ceiling_motion_sensor
+    - binary_sensor.kit_motion_sensor
+    - binary_sensor.kit_sink_motion_sensor
+    - binary_sensor.lr_motion_sensor_1
+    - binary_sensor.lr_motion_sensor_2
+    - binary_sensor.lr_motion_sensor_3
+    - binary_sensor.office_ceiling_motion_sensor
+    - binary_sensor.office_desk_motion_sensor
+    - binary_sensor.str_motion_sensor
+    - binary_sensor.storage_ceiling_motion_sensor
+    - binary_sensor.lr_front_entrance
+    - binary_sensor.office_entrance

@@ -1,0 +1,31 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+# light: !include lights.yaml
+automation: !include automations.yaml
+automation split: !include_dir_merge_list ./automations/
+script: !include scripts.yaml
+script split: !include_dir_merge_named ./scripts/
+scene: !include scenes.yaml
+cloud: !include cloud.yaml
+binary_sensor: !include binary_sensor.yaml
+sensor: !include sensors.yaml
+
+utility_meter:
+  stove_el_usage:
+    source: sensor.kit_socket_stove_smartenergy_metering_summation_delivered
+    cycle: monthly
+    name: Stove Monthly usage
+  stove_el_usage_daily:
+    source: sensor.kit_socket_stove_smartenergy_metering_summation_delivered
+    cycle: daily
+    name: Stove Daily usage
+  hood_el_usage:
+    source: sensor.kit_socket_hood_smartenergy_metering_summation_delivered
+    cycle: monthly
+    name: Hood Monthly usage

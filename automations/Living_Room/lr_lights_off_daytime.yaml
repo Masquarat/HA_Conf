@@ -1,0 +1,48 @@
+- id: "16400906608664"
+  alias: LR_lights_off_daytime
+  description: "Turn lights off daytime in case manually turned on from switch or in case turned on before night to day transition. Or in case daytime lights go on with low lux and then lux goes up again"
+  trigger:
+    - platform: state
+      entity_id: group.lr_presence_group_3
+      from: "on"
+      to: "off"
+      for:
+        minutes: 9
+  condition:
+    - condition: state
+      entity_id: input_boolean.lr_long_mode
+      state: "on"
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.full_day
+          state: "on"
+        - condition: numeric_state
+          entity_id: input_number.lr_lux
+          above: "25"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.lr_lights_left_keep_off
+          state: "off"
+        - condition: state
+          entity_id: input_boolean.lr_lights_right_keep_off
+          state: "off"
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.lr_long_mode
+          - input_boolean.lr_lights_motion
+          - input_boolean.lr_movie_mode
+          - input_boolean.lr_play_mode
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.lr_socket_tv_lights
+          - switch.lr_socket_fan
+    - service: script.lr_light_turn_off_with_transition
+      data:
+        turn_off_entity: light.lr_lights_full_group_zha
+        transition_time: 25
+  mode: single

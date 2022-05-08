@@ -1,0 +1,38 @@
+- id: "1640157931436"
+  alias: LR_lights_keep_state
+  description: ""
+  trigger:
+    - device_id: 3e15a61435025f1c929f36d39515804d
+      domain: zha
+      platform: device
+      type: remote_button_long_press
+      subtype: dim_up
+  condition: []
+  action:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.lr_lights_left_group_zha
+              state: "off"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.lr_lights_left_keep_off
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.lr_lights_right_group_zha
+              state: "off"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.lr_lights_right_keep_off
+      default: []
+    - condition: state
+      entity_id: light.lr_lights_full_group_zha
+      state: "on"
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.lr_lights_keep_on
+  mode: single

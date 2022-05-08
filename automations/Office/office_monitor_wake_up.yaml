@@ -1,0 +1,19 @@
+- id: "1646384619198"
+  alias: Office Monitor Wake Up
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.monitor_status
+      from: "off"
+      to: "on"
+      for:
+        seconds: 1
+  condition:
+    - condition: state
+      entity_id: switch.office_socket_left_light
+      state: "off"
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.office_socket_left_light
+  mode: restart

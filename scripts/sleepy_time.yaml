@@ -1,0 +1,33 @@
+sleepy_time:
+  alias: sleepy_time
+  sequence:
+    - service: input_boolean.turn_on
+      target:
+        entity_id:
+          - input_boolean.lr_lights_left_keep_off
+          - input_boolean.lr_lights_right_keep_off
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.julmtv
+    - delay:
+        seconds: 5
+    - service: light.turn_off
+      target:
+        entity_id: light.lr_lights_full_group_zha
+    #    - service: switch.turn_off
+    #      target:
+    #        entity_id: switch.lr_socket_tv_lights
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.lr_movie_mode
+          - input_boolean.lr_play_mode
+          - input_boolean.lr_lights_keep_on
+          - input_boolean.lr_lights_motion
+          - input_boolean.lr_long_mode
+    - delay:
+        seconds: 3
+    - service: switch.turn_on
+      target:
+        entity_id: switch.lr_socket_fan
+  mode: single

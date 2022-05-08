@@ -1,0 +1,40 @@
+kitchen_lights_turn_on:
+  alias: Kitchen_lights_turn_on
+  sequence:
+    - service: light.turn_on
+      target:
+        entity_id: light.kitchen_lights_full_group_zha_group
+      data:
+        transition: "{{ transition_time_kitchen }}"
+        brightness: >
+          {% set brightness_add = 0 %}
+          {% if is_state('input_boolean.dining_motion','on') %}
+            {% set brightness_add = 40 %}
+          {% else %} {% endif %}
+          {% if is_state('input_boolean.kitchen_lights_motion_long','on') %}
+            {% set brightness_add = 90 %}
+          {% else %} {% endif %}
+          {% if is_state('binary_sensor.day','on') %}
+            {{ brightness_add + 70 }}
+          {% elif is_state('binary_sensor.pre_evening','on') %}
+            {{ brightness_add + 90 }}
+          {% elif is_state('binary_sensor.evening','on') %}
+            {{ brightness_add + 110 }}
+          {% elif is_state('binary_sensor.late_evening','on') %}
+            {{ brightness_add + 90 }}
+          {% elif is_state('binary_sensor.night','on') %}
+            {{ brightness_add + 25 }}
+          {% else %} {% endif %}
+        kelvin: 2600
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: input_boolean.kitchen_lights_motion_long
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.full_day
+        state: 'off'
+    - service: switch.turn_on
+      target:
+        entity_id: switch.dining_socket_section_light
+  mode: restart

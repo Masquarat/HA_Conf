@@ -1,0 +1,23 @@
+- id: "1640066519058"
+  alias: LR_Fan_Turn_On
+  description: ""
+  trigger:
+    - platform: device
+      device_id: 190fe637d4dc28943057893c1fcfe99d
+      domain: media_player
+      entity_id: media_player.julmtv
+      type: turned_on
+    - platform: state
+      entity_id: input_boolean.lr_long_mode
+      from: "off"
+      to: "on"
+  condition:
+    - condition: numeric_state
+      entity_id: weather.home
+      attribute: temperature
+      above: "24"
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.lr_socket_fan
+  mode: single

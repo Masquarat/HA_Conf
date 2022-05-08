@@ -1,0 +1,33 @@
+- id: "1637154855144"
+  alias: Kitchen Fridge Door Open Long
+  description: Send notifications if fridge door is open for long time
+  trigger:
+    - type: opened
+      platform: device
+      device_id: c583d897d4aedcc40a530a287b435a8d
+      entity_id: binary_sensor.kit_door_fridge
+      domain: binary_sensor
+      for:
+        minutes: 4
+  condition: []
+  action:
+    - service: notify.mobile_app_mi_a1
+      data:
+        message: Fridge door open for more than 4 minutes!
+    - repeat:
+        while:
+          - type: is_open
+            condition: device
+            device_id: c583d897d4aedcc40a530a287b435a8d
+            entity_id: binary_sensor.kit_door_fridge
+            domain: binary_sensor
+        sequence:
+          - service: tts.cloud_say
+            data:
+              entity_id: media_player.kitchen_speaker
+              message:
+                Fridge door has been open for more than 4 minutes. Please close
+                it!
+          - delay:
+              minutes: 5
+  mode: single

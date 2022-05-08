@@ -1,0 +1,32 @@
+- id: "1650449825206"
+  alias: Dining Fan Motion
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.dining_motion_sensor
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: switch.dining_socket_fan
+      state: "off"
+    - condition: numeric_state
+      entity_id: weather.home
+      attribute: temperature
+      above: "24"
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.dining_socket_fan
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.dining_motion_sensor
+          from: "on"
+          to: "off"
+          for:
+            minutes: 4
+      timeout: "07:00:00"
+    - service: switch.turn_off
+      target:
+        entity_id: switch.dining_socket_fan
+  mode: single

@@ -1,0 +1,93 @@
+- id: "1648360873192"
+  alias: Away Mode
+  description: ""
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: "0"
+      id: sunset
+    - platform: time
+      at: "20:11"
+      id: eight
+    - platform: time
+      at: "21:03"
+      id: nine
+    - platform: time
+      at: "23:15"
+      id: eleven
+    - platform: time
+      at: 00:08
+      id: midnight
+  condition:
+    - condition: state
+      entity_id: input_boolean.away_mode
+      state: "on"
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: sunset
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.kitchen_lights_full_group_zha_group
+                  - light.lr_lights_mid_group_zha
+              data:
+                brightness: 180
+                kelvin: 2400
+        - conditions:
+            - condition: trigger
+              id: eight
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id: light.kitchen_lights_full_group_zha_group
+            - service: light.turn_on
+              target:
+                entity_id: light.lr_lights_full_group_zha
+              data:
+                kelvin: 2300
+                brightness: 140
+        - conditions:
+            - condition: trigger
+              id: nine
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id:
+                  - light.lr_lights_full_group_zha
+                  - light.kitchen_lights_2nd_zha_group
+            - service: light.turn_on
+              target:
+                entity_id: light.dining_lights_full_group_zha
+              data:
+                kelvin: 2400
+                brightness: 150
+        - conditions:
+            - condition: trigger
+              id: nine
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id:
+                  - light.lr_lights_left_group_zha
+                  - light.kitchen_lights_full_group_zha_group
+              data:
+                kelvin: 2200
+                brightness: 110
+            - service: light.turn_off
+              target:
+                entity_id: light.dining_lights_full_group_zha
+        - conditions:
+            - condition: trigger
+              id: midnight
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id:
+                  - light.lr_lights_full_group_zha
+                  - light.kitchen_lights_full_group_zha_group
+                  - light.dining_lights_full_group_zha
+      default: []
+  mode: single

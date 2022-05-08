@@ -1,0 +1,18 @@
+lr_light_turn_off_with_transition:
+  alias: LR Light Turn Off With Transition
+  sequence:
+    - service: light.turn_on
+      target:
+        entity_id: "{{ turn_off_entity }}"
+      data:
+        transition: "{{ transition_time }}"
+        brightness: 1
+    - delay:
+        seconds: "{{ transition_time }}"
+    - condition: state
+      entity_id: group.lr_presence_group
+      state: "off"
+    - service: light.turn_off
+      target:
+        entity_id: "{{ turn_off_entity }}"
+  mode: parallel

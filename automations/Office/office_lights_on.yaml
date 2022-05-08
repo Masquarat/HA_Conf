@@ -1,0 +1,49 @@
+- id: "1646383075843"
+  alias: Office Lights On
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.office_entrance
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.office_ceiling_motion_sensor
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.office_desk_motion_sensor
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.monitor_status
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: input_boolean.office_motion
+      state: "off"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.office_motion
+    - service: light.turn_on
+      target:
+        entity_id: light.office_lights_full_group_zha
+      data:
+        transition: 7
+        kelvin: 2350
+        brightness: >
+          {% if is_state('binary_sensor.night','on') %}
+            {{ 50 }}
+          {% else %}
+            {{ 100 }}
+          {% endif %}
+    - service: switch.turn_on
+      target:
+        entity_id:
+          - switch.office_socket_fan
+          - switch.office_socket_right_extension
+    - service: fan.turn_on
+      target:
+        entity_id: fan.mi_air_purifier_2s
+  mode: restart

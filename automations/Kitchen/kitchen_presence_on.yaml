@@ -1,0 +1,33 @@
+- id: '1637655024233'
+  alias: Kitchen Presence On
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.kit_motion_sensor
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.kit_sink_motion_sensor
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.kit_door_fridge
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.kit_ceiling_motion_sensor
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.kitchen_speaker_status
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.kitchen_presence
+    state: 'off'
+  action:
+  - service: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.kitchen_presence
+  mode: restart

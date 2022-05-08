@@ -1,0 +1,72 @@
+- id: "1640154983641"
+  alias: LR_lights_switch_on
+  description: ""
+  trigger:
+    - device_id: 3e15a61435025f1c929f36d39515804d
+      domain: zha
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+      id: switch_on_left
+    - device_id: 3e15a61435025f1c929f36d39515804d
+      domain: zha
+      platform: device
+      type: remote_button_short_press
+      subtype: dim_up
+      id: switch_on_right
+  condition: []
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.lr_lights_left_keep_off
+          - input_boolean.lr_lights_right_keep_off
+          - input_boolean.lr_lights_keep_on
+          - input_boolean.lr_lights_motion
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.lr_long_mode
+              state: "off"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.lr_long_mode
+            - choose:
+                - conditions:
+                    - condition: trigger
+                      id: switch_on_left
+                  sequence:
+                    - service: light.turn_off
+                      target:
+                        entity_id: light.lr_smart_light_5
+                    - service: script.lr_standard_mode
+                      data:
+                        lr_light_entity: light.lr_lights_left_group_zha
+                - conditions:
+                    - condition: trigger
+                      id: switch_on_right
+                  sequence:
+                    - service: light.turn_off
+                      target:
+                        entity_id: light.lr_smart_light_2
+                    - service: script.lr_standard_mode
+                      data:
+                        lr_light_entity: light.lr_lights_right_group_zha
+              default: []
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.lr_long_mode
+              state: "on"
+          sequence:
+            - service: script.lr_standard_mode
+              data:
+                lr_light_entity: >
+                  {% if trigger.id == 'switch_on_left' %}
+                    light.lr_lights_left_group_zha
+                  {% elif trigger.id == 'switch_on_right' %}
+                    light.lr_lights_right_group_zha
+                  {% else %} {% endif %}
+      default: []
+  mode: parallel
+  max: 10

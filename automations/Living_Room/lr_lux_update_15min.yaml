@@ -1,0 +1,20 @@
+- id: "1640003221799"
+  alias: LR_LUX_update_15min
+  description: ""
+  trigger:
+    - platform: time_pattern
+      minutes: "/5"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.full_day
+      state: "on"
+    - condition: state
+      entity_id: light.lr_lights_full_group_zha
+      state: "off"
+  action:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.lr_lux
+      data:
+        value: "{{ states('sensor.lr_lux_1') }}"
+  mode: single

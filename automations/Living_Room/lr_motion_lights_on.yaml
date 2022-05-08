@@ -1,0 +1,120 @@
+- id: "1640082711427"
+  alias: LR_Motion_Lights_On
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.lr_motion_sensor_1
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.lr_motion_sensor_2
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.lr_motion_sensor_3
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.lr_front_entrance
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: input_boolean.lr_long_mode
+      state: "off"
+    - condition: state
+      entity_id: input_boolean.lr_lights_motion
+      state: "off"
+    - condition: state
+      entity_id: media_player.julmtv
+      state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.lr_lights_left_keep_off
+          state: "off"
+        - condition: state
+          entity_id: input_boolean.lr_lights_right_keep_off
+          state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.full_day
+          state: "off"
+        - condition: numeric_state
+          entity_id: input_number.lr_lux
+          below: "25"
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.lr_lights_motion
+    - service: light.turn_on
+      target:
+        entity_id: >
+          {% if is_state('input_boolean.lr_lights_left_keep_off','on') %}
+            light.lr_smart_light_5
+          {% elif is_state('input_boolean.lr_lights_right_keep_off','on') %}
+            light.lr_smart_light_2
+          {% else %}
+            light.lr_lights_mid_group_zha
+          {% endif %}
+      data:
+        brightness: 50
+        kelvin: 2200
+    - delay:
+        seconds: 30
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.lr_motion_sensor_1
+          from: "off"
+          to: "on"
+        - platform: state
+          entity_id: binary_sensor.lr_motion_sensor_2
+          from: "off"
+          to: "on"
+        - platform: state
+          entity_id: binary_sensor.lr_motion_sensor_3
+          id: motion3
+          from: "off"
+          to: "on"
+      timeout: "60"
+    - condition: state
+      entity_id: input_boolean.lr_long_mode
+      state: "off"
+    - choose:
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: binary_sensor.lr_motion_sensor_1
+                  state: "on"
+                - condition: state
+                  entity_id: binary_sensor.lr_motion_sensor_2
+                  state: "on"
+                - condition: template
+                  value_template: '{{ wait.trigger.id == "motion3" }}'
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.lr_long_mode
+            - service: input_boolean.turn_off
+              target:
+                entity_id: input_boolean.lr_lights_motion
+            - service: script.lr_standard_mode
+              data:
+                lr_light_entity: light.lr_lights_full_group_zha
+      default: []
+    - condition: state
+      entity_id: input_boolean.lr_long_mode
+      state: "off"
+    - condition: state
+      entity_id: light.lr_lights_mid_group_zha
+      state: "on"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.lr_lights_motion
+    - service: script.lr_light_turn_off_with_transition
+      data:
+        turn_off_entity: light.lr_lights_mid_group_zha
+        transition_time: 25
+  mode: restart

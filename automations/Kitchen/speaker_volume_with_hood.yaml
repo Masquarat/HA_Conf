@@ -1,0 +1,39 @@
+- id: "1643633698868"
+  alias: Adjust Kitchen Speaker Volume based on Hood
+  description:
+    Increase Kitchen Speaker volume when Hood turned on, decrease when
+    hood turned off
+  trigger:
+    - platform: state
+      entity_id: switch.kit_socket_hood
+      from: "off"
+      to: "on"
+      for:
+        seconds: 1
+      id: hood_on
+    - platform: state
+      entity_id: switch.kit_socket_hood
+      from: "on"
+      to: "off"
+      #    for:
+      #      seconds: 1
+      id: hood_off
+  condition: []
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: hood_on
+          sequence:
+            - service: media_player.volume_up
+              target:
+                entity_id: media_player.kitchen_speaker
+        - conditions:
+            - condition: trigger
+              id: hood_off
+          sequence:
+            - service: media_player.volume_down
+              target:
+                entity_id: media_player.kitchen_speaker
+      default: []
+  mode: restart

@@ -1,0 +1,50 @@
+- id: "1635927634563"
+  alias: Upstairs Storage Light motion detection
+  description: Turn on-off Upstairs Storage light with motion
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.storage_ceiling_motion_sensor
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.day
+      state: 'off'
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.storage_smart_light
+      data:
+        kelvin: >
+          {% if is_state('binary_sensor.pre_evening','on') %}
+            2200
+          {% elif is_state('binary_sensor.evening','on') %}
+            2300
+          {% elif is_state('binary_sensor.late_evening','on') %}
+            2100
+          {% elif is_state('binary_sensor.night','on') %}
+            2000
+          {% else %} {% endif %}
+        brightness: >
+          {% if is_state('binary_sensor.pre_evening','on') %}
+            110
+          {% elif is_state('binary_sensor.evening','on') %}
+            153
+          {% elif is_state('binary_sensor.late_evening','on') %}
+            75
+          {% elif is_state('binary_sensor.night','on') %}
+            5
+          {% else %} {% endif %}
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.storage_ceiling_motion_sensor
+          from: "on"
+          to: "off"
+          for: 00:01:30
+      timeout: "02:00:00"
+      continue_on_timeout: true
+    - service: script.light_turn_off_with_transition
+      data:
+        turn_off_entity: light.storage_smart_light
+        transition_time: 26
+  mode: restart
